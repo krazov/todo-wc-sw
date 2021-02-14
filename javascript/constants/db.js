@@ -1,4 +1,4 @@
-export const INIT_DB = 'INIT_DB';
+export const OPEN_DB = 'OPEN_DB';
 export const DB_INITED = 'DB_INITED';
 export const LIST_UPDATED = 'LIST_UPDATED';
 export const CONTACT_ADD = 'CONTACT_ADD';

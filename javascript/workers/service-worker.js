@@ -19,7 +19,7 @@ async function sendMessage(message) {
 
 let db = null;
 
-function initDb() {
+function openDB(id) {
     console.log('Initiating database...');
     const request = self.indexedDB.open('todo-list', 1);
 
@@ -52,7 +52,7 @@ function initDb() {
             console.error(`Database error: ${event.target.errorCode}`);
         }
 
-        sendMessage({ type: 'DB_INITED' });
+        sendMessage({ id, type: 'DB_INITED' });
 
         const allTodos = [];
         const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
@@ -79,20 +79,20 @@ function initDb() {
 
 function addContact({ todo, isDone }) {}
 
-self.addEventListener('message', async function (event) {
+self.onmessage = async function (event) {
     const {
         data,
-        data: { type },
+        data: { id, type },
     } = event;
 
     switch (type) {
-        case 'INIT_DB':
-            initDb();
+        case 'OPEN_DB':
+            openDB(id);
             break;
         case 'CONTACT_ADD':
             break;
     }
-});
+};
 
 // can be cleared here: brave://serviceworker-internals/
 // indexedDB tutorial: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB

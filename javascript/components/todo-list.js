@@ -1,5 +1,6 @@
 import './todo-item.js';
 
+import { ServiceWorkerBus } from '../workers/service-worker-bus.js';
 import { LIST_UPDATED } from '../constants/db.js';
 
 const styling = `
@@ -20,20 +21,16 @@ class TodoList extends HTMLElement {
         style.textContent = styling;
         shadow.appendChild(style);
 
-        navigator.serviceWorker.onmessage = (event) => {
-            const { data: { type, payload } } = event;
+        ServiceWorkerBus.subscribe(LIST_UPDATED, (data) => {
+            shadow.textContent = '';
+            shadow.appendChild(style);
 
-            if (type == LIST_UPDATED) {
-                shadow.textContent = '';
-                shadow.appendChild(style);
-
-                for (const todo of payload) {
-                    const todoItem = document.createElement('todo-item');
-                    todoItem.todo = todo;
-                    shadow.appendChild(todoItem);
-                }
+            for (const todo of data) {
+                const todoItem = document.createElement('todo-item');
+                todoItem.todo = todo;
+                shadow.appendChild(todoItem);
             }
-        };
+        });
     }
 }
 

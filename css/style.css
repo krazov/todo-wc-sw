@@ -1,3 +1,7 @@
 :root {
     --border-color: #eee;
 }
+
+body {
+    font-family: Calibri, sans-serif;
+}

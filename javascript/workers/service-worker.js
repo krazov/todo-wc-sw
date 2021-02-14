@@ -30,13 +30,14 @@ function initDb() {
 
         const objectStore = db.createObjectStore('todos', { keyPath: 'id', autoIncrement: true });
         objectStore.createIndex('id', 'id', { unique: true });
-        objectStore.createIndex('todo', 'todo', { unique: false });
+        objectStore.createIndex('task', 'task', { unique: false });
         objectStore.createIndex('isDone', 'isDone', { unique: false });
-        objectStore.transaction.oncomplete = function (event) {
+
+        objectStore.transaction.oncomplete = async function (event) {
             const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
             todosObjectStore.add({
                 id: 1,
-                todo: 'An example todo',
+                task: 'An example todo',
                 isDone: false,
             });
         };
@@ -50,6 +51,25 @@ function initDb() {
         db.onerror = function (event) {
             console.error(`Database error: ${event.target.errorCode}`);
         }
+
+        sendMessage({ type: 'DB_INITED' });
+
+        const allTodos = [];
+        const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
+
+        todosObjectStore.openCursor().onsuccess = (event) => {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                allTodos.push(cursor.value);
+                cursor.continue();
+            } else {
+                sendMessage({
+                    type: 'LIST_UPDATED',
+                    payload: allTodos,
+                });
+            }
+        };
     };
 
     request.onerror = function (event) {
@@ -57,17 +77,13 @@ function initDb() {
     };
 }
 
-function addContact({ todo, isDone }) {
-    db
-}
+function addContact({ todo, isDone }) {}
 
 self.addEventListener('message', async function (event) {
     const {
         data,
         data: { type },
     } = event;
-
-    sendMessage({ status: 'Message received', data });
 
     switch (type) {
         case 'INIT_DB':
@@ -77,3 +93,6 @@ self.addEventListener('message', async function (event) {
             break;
     }
 });
+
+// can be cleared here: brave://serviceworker-internals/
+// indexedDB tutorial: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB

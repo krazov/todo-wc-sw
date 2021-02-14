@@ -5,7 +5,7 @@ let id = 0;
 const latestId = () => ++id;
 
 let serviceWorker = null;
-let requestors = new Map;
+const requestors = new Map;
 const subscribers = new Set;
 const trueSubscribers = new WeakSet;
 

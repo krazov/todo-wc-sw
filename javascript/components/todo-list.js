@@ -1,6 +1,7 @@
 import './todo-item.js';
 
 import { ServiceWorkerBus } from '../workers/service-worker-bus.js';
+import { SERVICE_WORKER_UPDATE } from '../workers/events.js';
 import { LIST_UPDATED } from '../constants/db.js';
 
 const styling = `
@@ -23,7 +24,7 @@ class TodoList extends HTMLElement {
 
         ServiceWorkerBus.subscribe(this);
 
-        this.addEventListener('serviceWorkerUpdate', (event) => {
+        this.addEventListener(SERVICE_WORKER_UPDATE, (event) => {
             const { detail: { type, payload } } = event;
 
             if (type != LIST_UPDATED) return;

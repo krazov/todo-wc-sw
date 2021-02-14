@@ -1,11 +1,13 @@
 import { registerServiceWorker } from './register-service-worker.js';
+import { listUpdated } from './events.js';
 
 let id = 0;
 const latestId = () => ++id;
 
 let serviceWorker = null;
 let requestors = new Map;
-const listeners = new Map;
+const subscribers = new Set;
+const trueSubscribers = new WeakSet;
 
 navigator.serviceWorker.onmessage = (event) => {
     const { data: { id, type, payload } } = event;
@@ -19,10 +21,8 @@ navigator.serviceWorker.onmessage = (event) => {
     if (id && requestors.has(id)) {
         requestors.get(id).resolve({ type, payload });
         requestors.delete(id);
-    } else if (listeners.has(type)) {
-        for (const handler of listeners.get(type)) {
-            handler(payload);
-        }
+    } else for (const component of subscribers) {
+        component.dispatchEvent(listUpdated(type, payload));
     }
 };
 
@@ -44,16 +44,15 @@ function request({ type, payload }) {
     });
 };
 
-function subscribe(type, handler) {
-    if (typeof handler != 'function') {
-        throw Error('Handler has to be a function!');
-    }
+function subscribe(component) {
+    subscribers.add(component);
+    trueSubscribers.add(component);
 
-    if (!listeners.has(type)) {
-        listeners.set(type, []);
+    // while we at it, let’s check unused subscribers
+    for (const subscriber of subscribers) {
+        if (trueSubscribers.has(subscriber)) continue;
+        subscribers.delete(subscriber);
     }
-
-    listeners.get(type).push(handler);
 }
 
 export const ServiceWorkerBus = {

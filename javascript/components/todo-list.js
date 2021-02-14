@@ -21,11 +21,18 @@ class TodoList extends HTMLElement {
         style.textContent = styling;
         shadow.appendChild(style);
 
-        ServiceWorkerBus.subscribe(LIST_UPDATED, (data) => {
-            shadow.textContent = '';
-            shadow.appendChild(style);
+        ServiceWorkerBus.subscribe(this);
 
-            for (const todo of data) {
+        this.addEventListener('serviceWorkerUpdate', (event) => {
+            const { detail: { type, payload } } = event;
+
+            if (type != LIST_UPDATED) return;
+
+            for (const oldTodoItem of shadow.querySelectorAll('todo-item')) {
+                shadow.removeChild(oldTodoItem);
+            }
+
+            for (const todo of payload) {
                 const todoItem = document.createElement('todo-item');
                 todoItem.todo = todo;
                 shadow.appendChild(todoItem);

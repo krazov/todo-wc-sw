@@ -19,7 +19,7 @@ async function sendMessage(message) {
 
 let db = null;
 
-function openDB(id) {
+function openDB(requestId) {
     console.log('Initiating database...');
     const request = self.indexedDB.open('todo-list', 1);
 
@@ -49,27 +49,11 @@ function openDB(id) {
         db = event.target.result;
 
         db.onerror = function (event) {
-            console.error(`Database error: ${event.target.errorCode}`);
+            console.error(`Database error: ${event.target.errorCode}`, error);
         }
 
-        sendMessage({ id, type: 'DB_INITED' });
-
-        const allTodos = [];
-        const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
-
-        todosObjectStore.openCursor().onsuccess = (event) => {
-            const cursor = event.target.result;
-
-            if (cursor) {
-                allTodos.push(cursor.value);
-                cursor.continue();
-            } else {
-                sendMessage({
-                    type: 'LIST_UPDATED',
-                    payload: allTodos,
-                });
-            }
-        };
+        sendMessage({ id: requestId, type: 'DB_INITED' });
+        broadcastTodos();
     };
 
     request.onerror = function (event) {
@@ -77,19 +61,58 @@ function openDB(id) {
     };
 }
 
-function addContact({ todo, isDone }) {}
+function addTodo(requestId, todo) {
+    const transaction = db.transaction(['todos'], 'readwrite');
+    transaction.oncomplete = (event) => {};
+    transaction.onerror = (event) => {
+        sendMessage({ id: requestId, type: 'TODO_ADDED', error: event });
+    };
+
+    const todosObjectStore = transaction.objectStore('todos')
+    const idIndexCursor = todosObjectStore.index('id').openCursor(null, 'prev');
+    idIndexCursor.onsuccess = (event) => {
+        const latestId = event.target.result.key;
+        console.log(event, event.target.result.key);
+        const newTodo = { id: latestId + 1, task: todo, isDone: false };
+        const request = todosObjectStore.add(newTodo);
+        request.onsuccess = function(event) {
+            sendMessage({ id: requestId, type: 'TODO_ADDED', payload: newTodo });
+            broadcastTodos();
+        };
+    };
+}
+
+function broadcastTodos() {
+    const allTodos = [];
+    const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
+
+    todosObjectStore.openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+            allTodos.push(cursor.value);
+            cursor.continue();
+        } else {
+            sendMessage({
+                type: 'LIST_UPDATED',
+                payload: allTodos,
+            });
+        }
+    };
+}
 
 self.onmessage = async function (event) {
     const {
         data,
-        data: { id, type },
+        data: { id, type, payload },
     } = event;
 
     switch (type) {
         case 'OPEN_DB':
             openDB(id);
             break;
-        case 'CONTACT_ADD':
+        case 'TODO_ADD':
+            addTodo(id, payload);
             break;
     }
 };

@@ -1,7 +1,9 @@
 
 import { OPEN_DB, DB_INITED } from './constants/db.js';
 import { ServiceWorkerBus } from './workers/service-worker-bus.js';
+
 import './components/todo-list.js';
+import './components/todo-form.js';
 
 main();
 
@@ -13,6 +15,11 @@ async function main() {
 }
 
 function loadList() {
+    const app = document.getElementById('app');
+
     const todoList = document.createElement('todo-list');
-    document.getElementById('app').appendChild(todoList);
+    app.appendChild(todoList);
+
+    const todoForm = document.createElement('todo-form');
+    app.appendChild(todoForm);
 }

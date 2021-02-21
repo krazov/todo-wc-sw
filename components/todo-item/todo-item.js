@@ -1,18 +1,7 @@
-import { templateHandler } from "../utils/dom.general.util.js";
-import { stylesheet } from "../utils/dom.stylesheet-constructor.js";
+import { templateHandler } from "../../utils/dom.general.util.js";
+import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
 
-const sheet = stylesheet(`
-    :host {
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-    }
-    .id:before {
-        content: '#';
-        color: var(--todo-item-hash-color, #ccc);
-    }
-`);
+const sheet = stylesheet({ url: '/components/todo-item/todo-item.css' });
 
 const template = `
     <span class="id"></span>
@@ -36,6 +25,8 @@ class TodoItem extends HTMLElement {
     }
 
     set todo(todo) {
+        const { shadowRoot } = this;
+
         const [html, appendTodoTo] = templateHandler(template);
         const [edit] = templateHandler(editTemplate);
 
@@ -52,19 +43,32 @@ class TodoItem extends HTMLElement {
 
         input.value = todo.task;
 
-        appendTodoTo(this.shadowRoot);
+        appendTodoTo(shadowRoot);
 
         task.onclick = () => {
-            this.shadowRoot.insertBefore(edit, task);
-            this.shadowRoot.removeChild(task);
+            shadowRoot.insertBefore(form, task);
+            shadowRoot.removeChild(task);
+            input.focus();
+        };
+
+        input.onblur = () => {
+            shadowRoot.insertBefore(task, form);
+            shadowRoot.removeChild(form);
+        };
+
+        input.onkeyup = (event) => {
+            if (event.code == 'Escape') input.blur();
         };
 
         form.onsubmit = (event) => {
             event.preventDefault();
-            console.log('New value', input.value);
+            input.blur();
 
-            this.shadowRoot.insertBefore(task, form);
-            this.shadowRoot.removeChild(form);
+            shadowRoot.dispatchEvent(new CustomEvent('TestEvent', {
+                composed: true,
+                bubbles: true,
+                detail: input.value,
+            }));
         };
     }
 }

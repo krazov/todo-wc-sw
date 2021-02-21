@@ -1,0 +1,13 @@
+:host {
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+:host(:first-child) {
+    border-top: 1px solid #eee;
+}
+.id:before {
+    content: '#';
+    color: var(--todo-item-hash-color, #ccc);
+}

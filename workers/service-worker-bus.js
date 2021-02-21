@@ -49,6 +49,7 @@ function subscribe(component) {
     trueSubscribers.add(component);
 
     // while we’re at it, let’s check unused subscribers
+    // TODO: this will likely fail, need to try to iterare over
     for (const subscriber of subscribers) {
         if (trueSubscribers.has(subscriber)) continue;
         subscribers.delete(subscriber);

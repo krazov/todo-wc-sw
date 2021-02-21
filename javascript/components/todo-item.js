@@ -1,4 +1,5 @@
 import { templateHandler } from "../utils/dom.general.util.js";
+import { stylesheet } from "../utils/dom.stylesheet-constructor.js";
 
 const styling = `
     :host {
@@ -12,15 +13,7 @@ const styling = `
         color: var(--todo-item-hash-color, #ccc);
     }
 `;
-const sheet = new CSSStyleSheet;
-sheet.replace(styling)
-    .then(() => {
-        console.log('<TODO-ITEM> stylesheet created.');
-    })
-    .catch((error) => {
-        console.warn('<TODO-ITEM> stylesheet, sadly, not created.');
-        console.error(error);
-    });
+const sheet = stylesheet(styling);
 
 const template = `
     <span class="id"></span>

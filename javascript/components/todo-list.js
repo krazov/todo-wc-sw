@@ -3,6 +3,7 @@ import './todo-item.js';
 import { ServiceWorkerBus } from '../workers/service-worker-bus.js';
 import { SERVICE_WORKER_UPDATE } from '../workers/events.js';
 import { LIST_UPDATED } from '../constants/db.js';
+import { stylesheet } from '../utils/dom.stylesheet-constructor.js';
 
 const styling = `
     :host {
@@ -11,6 +12,7 @@ const styling = `
         padding: 20px;
     }
 `;
+const sheet = stylesheet(styling);
 
 class TodoList extends HTMLElement {
     constructor() {
@@ -18,9 +20,7 @@ class TodoList extends HTMLElement {
 
         const shadow = this.attachShadow({ mode: 'open' });
 
-        const style = document.createElement('style');
-        style.textContent = styling;
-        shadow.appendChild(style);
+        shadow.adoptedStyleSheets = [sheet];
 
         ServiceWorkerBus.subscribe(this);
 

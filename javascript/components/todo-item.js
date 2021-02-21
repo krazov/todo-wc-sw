@@ -12,6 +12,15 @@ const styling = `
         color: var(--todo-item-hash-color, #ccc);
     }
 `;
+const sheet = new CSSStyleSheet;
+sheet.replace(styling)
+    .then(() => {
+        console.log('<TODO-ITEM> stylesheet created.');
+    })
+    .catch((error) => {
+        console.warn('<TODO-ITEM> stylesheet, sadly, not created.');
+        console.error(error);
+    });
 
 const template = `
     <span class="id"></span>
@@ -31,9 +40,7 @@ class TodoItem extends HTMLElement {
 
         const shadow = this.attachShadow({ mode: 'open' });
 
-        const style = document.createElement('style');
-        style.textContent = styling;
-        shadow.appendChild(style);
+        shadow.adoptedStyleSheets = [sheet];
     }
 
     set todo(todo) {

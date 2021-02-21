@@ -1,7 +1,7 @@
 import { templateHandler } from "../utils/dom.general.util.js";
 import { stylesheet } from "../utils/dom.stylesheet-constructor.js";
 
-const styling = `
+const sheet = stylesheet(`
     :host {
         border-bottom: 1px solid #eee;
         display: flex;
@@ -12,8 +12,7 @@ const styling = `
         content: '#';
         color: var(--todo-item-hash-color, #ccc);
     }
-`;
-const sheet = stylesheet(styling);
+`);
 
 const template = `
     <span class="id"></span>

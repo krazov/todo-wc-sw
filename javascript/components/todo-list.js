@@ -5,14 +5,13 @@ import { SERVICE_WORKER_UPDATE } from '../workers/events.js';
 import { LIST_UPDATED } from '../constants/db.js';
 import { stylesheet } from '../utils/dom.stylesheet-constructor.js';
 
-const styling = `
+const sheet = stylesheet(`
     :host {
         border: 1px solid var(--border-color, fuchsia);
         display: block;
         padding: 20px;
     }
-`;
-const sheet = stylesheet(styling);
+`);
 
 class TodoList extends HTMLElement {
     constructor() {

@@ -6,7 +6,6 @@ export function stylesheet(style = '') {
     } catch (error) {
         console.warn('Error while creating a stylesheet:', style);
         console.error(error);
-
     }
 
     return sheet;

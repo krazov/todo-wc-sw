@@ -1,4 +1,4 @@
-import { OPEN_DB } from './constants/db.js';
+import { OPEN_DB, TODO_EDIT } from './constants/db.js';
 import { ServiceWorkerBus } from './workers/service-worker-bus.js';
 
 import './components/todo-list/todo-list.js';
@@ -19,8 +19,11 @@ function loadList() {
     const todoList = document.createElement('todo-list');
     app.appendChild(todoList);
 
-    todoList.addEventListener('TestEvent', (event) => {
-        console.log('TestEvent has been captured', event.detail);
+    todoList.addEventListener('EditedTodoSubmitted', ({ detail }) => {
+        ServiceWorkerBus.request({
+            type: TODO_EDIT,
+            payload: detail,
+        });
     });
 
     const todoForm = document.createElement('todo-form');

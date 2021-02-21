@@ -64,10 +64,13 @@ class TodoItem extends HTMLElement {
             event.preventDefault();
             input.blur();
 
-            shadowRoot.dispatchEvent(new CustomEvent('TestEvent', {
+            shadowRoot.dispatchEvent(new CustomEvent('EditedTodoSubmitted', {
                 composed: true,
                 bubbles: true,
-                detail: input.value,
+                detail: {
+                    ...todo,
+                    task: input.value,
+                },
             }));
         };
     }

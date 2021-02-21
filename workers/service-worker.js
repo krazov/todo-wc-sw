@@ -67,7 +67,7 @@ function addTodo(requestId, todo) {
     transaction.onerror = (event) => {
         sendMessage({
             id: requestId,
-            type: 'TODO_ADDED',
+            type: 'TODO_NOT_ADDED',
             error: event,
         });
     };
@@ -88,6 +88,39 @@ function addTodo(requestId, todo) {
                 id: requestId,
                 type: 'TODO_ADDED',
                 payload: newTodo,
+            });
+
+            broadcastTodos();
+        };
+    };
+}
+
+function editTodo(requestId, todo) {
+    const transaction = db.transaction(['todos'], 'readwrite');
+    transaction.oncomplete = () => {};
+    transaction.onerror = (event) => {
+        sendMessage({
+            id: requestId,
+            type: 'TODO_NOT_EDITED',
+            error: event,
+        });
+    };
+
+    const todosObjectStore = transaction.objectStore('todos')
+    const idIndexCursor = todosObjectStore.get(todo.id)
+    idIndexCursor.onsuccess = (event) => {
+        const updatedTodo = {
+            ...event.target.result,
+            task: todo.task,
+            isDone: todo.isDone,
+        };
+        const request = todosObjectStore.put(updatedTodo);
+
+        request.onsuccess = () => {
+            sendMessage({
+                id: requestId,
+                type: 'TODO_EDITED',
+                payload: updatedTodo,
             });
 
             broadcastTodos();
@@ -123,6 +156,9 @@ self.onmessage = async function (event) {
             break;
         case 'TODO_ADD':
             addTodo(id, payload);
+            break;
+        case 'TODO_EDIT':
+            editTodo(id, payload);
             break;
     }
 };

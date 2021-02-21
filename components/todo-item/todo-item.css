@@ -11,3 +11,14 @@
     content: '#';
     color: var(--todo-item-hash-color, #ccc);
 }
+.task, form {
+    flex-basis: 100%;
+    padding: 0 10px;
+}
+input {
+    display: block;
+    width: calc(100% - 10px);
+}
+.done {
+    white-space: nowrap;
+}

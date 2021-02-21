@@ -27,7 +27,7 @@ navigator.serviceWorker.onmessage = (event) => {
 };
 
 async function init() {
-    serviceWorker = await registerServiceWorker('/javascript/workers/service-worker.js');
+    serviceWorker = await registerServiceWorker('/workers/service-worker.js');
 };
 
 function request({ type, payload }) {

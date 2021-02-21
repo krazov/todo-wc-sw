@@ -1,4 +1,4 @@
-self.addEventListener('install', function (event) {
+self.addEventListener('install', function () {
     self.skipWaiting();
     console.log('ServiceWorker installed.');
 });
@@ -56,27 +56,40 @@ function openDB(requestId) {
         broadcastTodos();
     };
 
-    request.onerror = function (event) {
+    request.onerror = function () {
         console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
 }
 
 function addTodo(requestId, todo) {
     const transaction = db.transaction(['todos'], 'readwrite');
-    transaction.oncomplete = (event) => {};
+    transaction.oncomplete = () => {};
     transaction.onerror = (event) => {
-        sendMessage({ id: requestId, type: 'TODO_ADDED', error: event });
+        sendMessage({
+            id: requestId,
+            type: 'TODO_ADDED',
+            error: event,
+        });
     };
 
     const todosObjectStore = transaction.objectStore('todos')
     const idIndexCursor = todosObjectStore.index('id').openCursor(null, 'prev');
     idIndexCursor.onsuccess = (event) => {
         const latestId = event.target.result.key;
-        console.log(event, event.target.result.key);
-        const newTodo = { id: latestId + 1, task: todo, isDone: false };
+        const newTodo = {
+            id: latestId + 1,
+            task: todo,
+            isDone: false,
+        };
         const request = todosObjectStore.add(newTodo);
-        request.onsuccess = function(event) {
-            sendMessage({ id: requestId, type: 'TODO_ADDED', payload: newTodo });
+
+        request.onsuccess = () => {
+            sendMessage({
+                id: requestId,
+                type: 'TODO_ADDED',
+                payload: newTodo,
+            });
+
             broadcastTodos();
         };
     };
@@ -102,10 +115,7 @@ function broadcastTodos() {
 }
 
 self.onmessage = async function (event) {
-    const {
-        data,
-        data: { id, type, payload },
-    } = event;
+    const { data: { id, type, payload } } = event;
 
     switch (type) {
         case 'OPEN_DB':

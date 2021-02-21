@@ -1,5 +1,5 @@
 
-import { OPEN_DB, DB_INITED } from './constants/db.js';
+import { OPEN_DB } from './constants/db.js';
 import { ServiceWorkerBus } from './workers/service-worker-bus.js';
 
 import './components/todo-list.js';

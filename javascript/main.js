@@ -22,4 +22,6 @@ function loadList() {
 
     const todoForm = document.createElement('todo-form');
     app.appendChild(todoForm);
+
+    // TODO: consider moving here the connection with ServiceWorker
 }

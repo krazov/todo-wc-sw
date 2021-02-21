@@ -59,14 +59,20 @@ class TodoForm extends HTMLElement {
         fieldset.appendChild(input);
         fieldset.appendChild(button);
 
+        let isSubmitting = false;
         form.onsubmit = async (event) => {
             event.preventDefault();
+
+            if (isSubmitting) return;
+
+            isSubmitting = true;
 
             await ServiceWorkerBus.request({
                 type: TODO_ADD,
                 payload: input.value,
             });
 
+            isSubmitting = false;
             input.value = '';
         };
     }

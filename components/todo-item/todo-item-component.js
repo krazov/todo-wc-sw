@@ -3,9 +3,11 @@ import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
 import { customEvent } from "../../utils/custom-events.util.js";
 import { EDITED_TODO_SUBMITTED } from "./todo-item-events.js";
 import { globalStyle } from "../../helpers/styles-container.helper.js";
+import { isActiveTodo, isUnfinishedTodo } from "../../utils/todo.util.js";
 
 const resetSheet = globalStyle({ url: '/css/reset.css' });
-const sheet = stylesheet({ url: '/components/todo-item/todo-item.css' });
+const formSheet = globalStyle({ url: '/css/form.css' });
+const todoItemSheet = stylesheet({ url: '/components/todo-item/todo-item.css' });
 
 const template = `
     <span class="id"></span>
@@ -27,7 +29,7 @@ class TodoItem extends HTMLElement {
 
         const shadowRoot = this.attachShadow({ mode: 'open' });
 
-        shadowRoot.adoptedStyleSheets = [resetSheet, sheet];
+        shadowRoot.adoptedStyleSheets = [resetSheet, formSheet, todoItemSheet];
     }
 
     set todo(todo) {
@@ -55,11 +57,21 @@ class TodoItem extends HTMLElement {
         };
 
         const buttonDone = html.querySelector('.done')
-        buttonDone.textContent = todo.isDone ? 'Mark undone' : 'Mark done';
+        buttonDone.textContent = isUnfinishedTodo(todo)
+            ? 'Mark done'
+            : isActiveTodo
+                ? 'Archive'
+                : '—';
         buttonDone.onclick = () => {
+            const payload = !todo.isDone
+                ? { isDone: true }
+                : !todo.isArchived
+                    ? { isArchived: true }
+                    : null;
+
             shadowRoot.dispatchEvent(editedTodoEvent({
                 ...todo,
-                isDone: !todo.isDone,
+                ...payload,
             }));
         };
 

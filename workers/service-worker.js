@@ -21,7 +21,7 @@ let db = null;
 
 function openDB(requestId) {
     console.log('Initiating database...');
-    const request = self.indexedDB.open('todo-list', 1);
+    const request = self.indexedDB.open('todo-list', 2);
 
     request.onupgradeneeded = function (event) {
         console.log('Database upgrade needed.');
@@ -39,6 +39,7 @@ function openDB(requestId) {
                 id: 1,
                 task: 'An example todo',
                 isDone: false,
+                isArchived: false,
             });
         };
     };
@@ -80,6 +81,7 @@ function addTodo(requestId, todo) {
             id: latestId + 1,
             task: todo,
             isDone: false,
+            isArchived: false,
         };
         const request = todosObjectStore.add(newTodo);
 
@@ -113,6 +115,7 @@ function editTodo(requestId, todo) {
             ...event.target.result,
             task: todo.task,
             isDone: todo.isDone,
+            isArchived: todo.isArchived,
         };
         const request = todosObjectStore.put(updatedTodo);
 

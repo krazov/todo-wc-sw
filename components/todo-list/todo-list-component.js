@@ -4,15 +4,9 @@ import { LIST_UPDATED } from '../../constants/db.js';
 import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
 
 import '../todo-item/todo-item-component.js';
+import { compareTodos, isActiveTodo } from '../../utils/todo.util.js';
 
 const sheet = stylesheet({ url: '/components/todo-list/todo-list.css' });
-
-const compareTodos = (a, b) =>
-    a.isDone && !b.isDone
-        ? 1
-        : !a.isDone && b.isDone
-            ? -1
-            : a.id - b.id;
 
 class TodoList extends HTMLElement {
     constructor() {
@@ -33,7 +27,9 @@ class TodoList extends HTMLElement {
                 shadowRoot.removeChild(oldTodoItem);
             }
 
-            const sortedList = [...payload].sort(compareTodos);
+            const sortedList = payload
+                .filter(isActiveTodo)
+                .sort(compareTodos);
 
             for (const todo of sortedList) {
                 const todoItem = document.createElement('todo-item');

@@ -47,6 +47,8 @@ class TodoItem extends HTMLElement {
         task.textContent = todo.task;
 
         task.onclick = () => {
+            if (todo.isDone) return;
+
             shadowRoot.insertBefore(form, task);
             shadowRoot.removeChild(task);
             input.focus();

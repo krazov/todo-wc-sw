@@ -7,6 +7,13 @@ import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
 
 const sheet = stylesheet({ url: '/components/todo-list/todo-list.css' });
 
+const compareTodos = (a, b) =>
+    a.isDone && !b.isDone
+        ? -1
+        : !a.isDone && b.isDone
+            ? 1
+            : a.id - b.id;
+
 class TodoList extends HTMLElement {
     constructor() {
         super();
@@ -26,7 +33,9 @@ class TodoList extends HTMLElement {
                 shadowRoot.removeChild(oldTodoItem);
             }
 
-            for (const todo of payload) {
+            const sortedList = [...payload].sort(compareTodos);
+
+            for (const todo of sortedList) {
                 const todoItem = document.createElement('todo-item');
                 todoItem.todo = todo;
                 shadowRoot.appendChild(todoItem);

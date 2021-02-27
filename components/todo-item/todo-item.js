@@ -19,6 +19,8 @@ const editTemplate = `
     </form>
 `;
 
+const editedTodoEvent = customEvent.bind(null, EDITED_TODO_SUBMITTED);
+
 class TodoItem extends HTMLElement {
     constructor() {
         super();
@@ -36,6 +38,8 @@ class TodoItem extends HTMLElement {
 
         console.log('Setting todo:', todo);
 
+        this.classList.toggle('is-done', todo.isDone)
+
         const id = html.querySelector('.id');
         id.textContent = todo.id;
 
@@ -50,9 +54,8 @@ class TodoItem extends HTMLElement {
 
         const buttonDone = html.querySelector('.done')
         buttonDone.textContent = todo.isDone ? 'Mark undone' : 'Mark done';
-        buttonDone.classList.toggle('is-done', todo.isDone);
         buttonDone.onclick = () => {
-            shadowRoot.dispatchEvent(customEvent(EDITED_TODO_SUBMITTED, {
+            shadowRoot.dispatchEvent(editedTodoEvent({
                 ...todo,
                 isDone: !todo.isDone,
             }));
@@ -63,13 +66,14 @@ class TodoItem extends HTMLElement {
             event.preventDefault();
             input.blur();
 
-            shadowRoot.dispatchEvent(customEvent(EDITED_TODO_SUBMITTED, {
+            shadowRoot.dispatchEvent(editedTodoEvent({
                 ...todo,
                 task: input.value,
             }));
         };
 
         const input = edit.querySelector('input');
+        input.value = todo.task;
         input.onblur = () => {
             shadowRoot.insertBefore(task, form);
             shadowRoot.removeChild(form);
@@ -77,7 +81,6 @@ class TodoItem extends HTMLElement {
         input.onkeyup = (event) => {
             if (event.code == 'Escape') input.blur();
         };
-        input.value = todo.task;
 
         appendTodoTo(shadowRoot);
     }

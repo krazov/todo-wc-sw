@@ -15,6 +15,10 @@
     flex-basis: 100%;
     padding: 0 10px;
 }
+:host(.is-done) .task {
+    color: var(--todo-item-hash-color, #999);
+    text-decoration: line-through;
+}
 input {
     display: block;
     width: calc(100% - 10px);

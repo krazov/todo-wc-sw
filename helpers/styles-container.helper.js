@@ -12,6 +12,7 @@ const sheet = (base, prop, value) => {
     return newSheet;
 };
 
-export const globalStyle = ({ style = '', url }) => url
-    ? sheet(fetchedStyles, 'url', url)
-    : sheet(inlineStyles, 'style', style);
+export const globalStyle = ({ style = '', url }) =>
+    url
+        ? sheet(fetchedStyles, 'url', url)
+        : sheet(inlineStyles, 'style', style);

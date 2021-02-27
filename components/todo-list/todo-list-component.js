@@ -1,9 +1,9 @@
-import '../todo-item/todo-item.js';
-
 import { ServiceWorkerBus } from '../../workers/service-worker-bus.js';
 import { SERVICE_WORKER_UPDATE } from '../../workers/events.js';
 import { LIST_UPDATED } from '../../constants/db.js';
 import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
+
+import '../todo-item/todo-item-component.js';
 
 const sheet = stylesheet({ url: '/components/todo-list/todo-list.css' });
 

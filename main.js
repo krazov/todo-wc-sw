@@ -11,10 +11,10 @@ async function main() {
     console.log('Starting app...');
     await ServiceWorkerBus.init();
     await ServiceWorkerBus.request({ type: OPEN_DB });
-    loadList();
+    loadElements();
 }
 
-function loadList() {
+function loadElements() {
     const app = document.getElementById('app');
 
     const todoList = document.createElement('todo-list');

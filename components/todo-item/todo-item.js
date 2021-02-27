@@ -2,7 +2,9 @@ import { templateHandler } from "../../utils/dom.general.util.js";
 import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
 import { customEvent } from "../../utils/custom-events.js";
 import { EDITED_TODO_SUBMITTED } from "./todo-item-events.js";
+import { globalStyle } from "../../helpers/styles-container.js";
 
+const resetSheet = globalStyle({ url: '/css/reset.css' });
 const sheet = stylesheet({ url: '/components/todo-item/todo-item.css' });
 
 const template = `
@@ -21,9 +23,9 @@ class TodoItem extends HTMLElement {
     constructor() {
         super();
 
-        const shadow = this.attachShadow({ mode: 'open' });
+        const shadowRoot = this.attachShadow({ mode: 'open' });
 
-        shadow.adoptedStyleSheets = [sheet];
+        shadowRoot.adoptedStyleSheets = [resetSheet, sheet];
     }
 
     set todo(todo) {

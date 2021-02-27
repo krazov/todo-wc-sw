@@ -1,12 +1,14 @@
 import { templateHandler } from "../../utils/dom.general.util.js";
 import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
+import { customEvent } from "../../utils/custom-events.js";
+import { EDITED_TODO_SUBMITTED } from "./todo-item-events.js";
 
 const sheet = stylesheet({ url: '/components/todo-item/todo-item.css' });
 
 const template = `
     <span class="id"></span>
     <span class="task"></span>
-    <span class="done"></span>
+    <button class="done"></button>
 `;
 
 const editTemplate = `
@@ -30,20 +32,13 @@ class TodoItem extends HTMLElement {
         const [html, appendTodoTo] = templateHandler(template);
         const [edit] = templateHandler(editTemplate);
 
+        console.log('Setting todo:', todo);
+
         const id = html.querySelector('.id');
-        const task = html.querySelector('.task');
-        const isDone = html.querySelector('.done')
-
         id.textContent = todo.id;
+
+        const task = html.querySelector('.task');
         task.textContent = todo.task;
-        isDone.textContent = todo.done ? 'Done' : 'Not done';
-
-        const form = edit.querySelector('form');
-        const input = edit.querySelector('input');
-
-        input.value = todo.task;
-
-        appendTodoTo(shadowRoot);
 
         task.onclick = () => {
             shadowRoot.insertBefore(form, task);
@@ -51,28 +46,38 @@ class TodoItem extends HTMLElement {
             input.focus();
         };
 
-        input.onblur = () => {
-            shadowRoot.insertBefore(task, form);
-            shadowRoot.removeChild(form);
+        const buttonDone = html.querySelector('.done')
+        buttonDone.textContent = todo.isDone ? 'Mark undone' : 'Mark done';
+        buttonDone.classList.toggle('is-done', todo.isDone);
+        buttonDone.onclick = () => {
+            shadowRoot.dispatchEvent(customEvent(EDITED_TODO_SUBMITTED, {
+                ...todo,
+                isDone: !todo.isDone,
+            }));
         };
 
-        input.onkeyup = (event) => {
-            if (event.code == 'Escape') input.blur();
-        };
-
+        const form = edit.querySelector('form');
         form.onsubmit = (event) => {
             event.preventDefault();
             input.blur();
 
-            shadowRoot.dispatchEvent(new CustomEvent('EditedTodoSubmitted', {
-                composed: true,
-                bubbles: true,
-                detail: {
-                    ...todo,
-                    task: input.value,
-                },
+            shadowRoot.dispatchEvent(customEvent(EDITED_TODO_SUBMITTED, {
+                ...todo,
+                task: input.value,
             }));
         };
+
+        const input = edit.querySelector('input');
+        input.onblur = () => {
+            shadowRoot.insertBefore(task, form);
+            shadowRoot.removeChild(form);
+        };
+        input.onkeyup = (event) => {
+            if (event.code == 'Escape') input.blur();
+        };
+        input.value = todo.task;
+
+        appendTodoTo(shadowRoot);
     }
 }
 

@@ -3,6 +3,7 @@ import { ServiceWorkerBus } from './workers/service-worker-bus.js';
 
 import './components/todo-list/todo-list.js';
 import './components/todo-form/todo-form.js';
+import { EDITED_TODO_SUBMITTED } from './components/todo-item/todo-item-events.js';
 
 main();
 
@@ -19,7 +20,7 @@ function loadList() {
     const todoList = document.createElement('todo-list');
     app.appendChild(todoList);
 
-    todoList.addEventListener('EditedTodoSubmitted', ({ detail }) => {
+    todoList.addEventListener(EDITED_TODO_SUBMITTED, ({ detail }) => {
         ServiceWorkerBus.request({
             type: TODO_EDIT,
             payload: detail,

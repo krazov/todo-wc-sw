@@ -3,7 +3,7 @@ import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
 import { customEvent } from "../../utils/custom-events.util.js";
 import { EDITED_TODO_SUBMITTED } from "./todo-item-events.js";
 import { globalStyle } from "../../helpers/styles-container.helper.js";
-import { isActiveTodo, isUnfinishedTodo } from "../../utils/todo.util.js";
+import { isActiveTodo, isArchivedTodo, isDoneTodo, isUnfinishedTodo } from "../../utils/todo.util.js";
 
 const resetSheet = globalStyle({ url: '/css/reset.css' });
 const formSheet = globalStyle({ url: '/css/form.css' });
@@ -40,7 +40,8 @@ class TodoItem extends HTMLElement {
 
         console.log('Setting todo:', todo);
 
-        this.classList.toggle('is-done', todo.isDone)
+        this.classList.toggle('is-done', isDoneTodo(todo));
+        this.classList.toggle('is-archived', isArchivedTodo(todo));
 
         const id = html.querySelector('.id');
         id.textContent = todo.id;
@@ -59,7 +60,7 @@ class TodoItem extends HTMLElement {
         const buttonDone = html.querySelector('.done')
         buttonDone.textContent = isUnfinishedTodo(todo)
             ? 'Mark done'
-            : isActiveTodo
+            : isActiveTodo(todo)
                 ? 'Archive'
                 : '—';
         buttonDone.onclick = () => {

@@ -2,7 +2,7 @@ import { ServiceWorkerBus } from '../../workers/service-worker-bus.js';
 import { TODO_ADD } from '../../constants/db.js';
 import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
 import { templateHandler } from '../../utils/dom.general.util.js';
-import { globalStyle } from '../../helpers/styles-container.js';
+import { globalStyle } from '../../helpers/styles-container.helper.js';
 
 const resetSheet = globalStyle({ url: '/css/reset.css' });
 const sheet = stylesheet({ url: '/components/todo-form/todo-form.css'});

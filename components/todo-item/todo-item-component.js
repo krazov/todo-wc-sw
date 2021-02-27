@@ -2,7 +2,7 @@ import { templateHandler } from "../../utils/dom.general.util.js";
 import { stylesheet } from "../../utils/dom.stylesheet-constructor.js";
 import { customEvent } from "../../utils/custom-events.util.js";
 import { EDITED_TODO_SUBMITTED } from "./todo-item-events.js";
-import { globalStyle } from "../../helpers/styles-container.js";
+import { globalStyle } from "../../helpers/styles-container.helper.js";
 
 const resetSheet = globalStyle({ url: '/css/reset.css' });
 const sheet = stylesheet({ url: '/components/todo-item/todo-item.css' });

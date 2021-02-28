@@ -1,12 +1,10 @@
 import { ServiceWorkerBus } from './workers/service-worker-bus.js';
-import { routes, pathOf } from './router/routes.js';
+import { routes } from './router/routes.js';
 
-import { OPEN_DB, TODO_EDIT } from './constants/db.js';
-import { EDITED_TODO_SUBMITTED } from './components/todo-item/todo-item-events.js';
+import { OPEN_DB } from './constants/db.js';
 
-import './components/app-navigation/app-navigation-component.js';
-import './components/todo-list/todo-list-component.js';
-import './components/todo-form/todo-form-component.js';
+import '/components/app-navigation/app-navigation-component.js';
+import '/router/app-router.js';
 
 main();
 
@@ -23,18 +21,8 @@ function loadElements() {
     const appNavigation = document.createElement('app-navigation');
     app.appendChild(appNavigation);
 
-    const todoList = document.createElement('todo-list');
-    app.appendChild(todoList);
-
-    todoList.addEventListener(EDITED_TODO_SUBMITTED, ({ detail }) => {
-        ServiceWorkerBus.request({
-            type: TODO_EDIT,
-            payload: detail,
-        });
-    });
-
-    const todoForm = document.createElement('todo-form');
-    app.appendChild(todoForm);
+    const appRouter = document.createElement('app-router');
+    app.appendChild(appRouter);
 
     window.onclick = (event) => {
         const link = event.path.find(node => node.nodeName == 'A');
@@ -48,7 +36,12 @@ function loadElements() {
             event.preventDefault();
 
             if (link.pathname != window.location.pathname) {
-                history.pushState({}, 'Test', link.href);
+                const state = {
+                    path: link.pathname,
+                };
+
+                window.history.pushState(state, routes.get(link.pathname).title, link.href);
+                window.dispatchEvent(new PopStateEvent('popstate', { state }));
             }
         }
     };

@@ -1,6 +1,6 @@
 import { ServiceWorkerBus } from '../../workers/service-worker-bus.js';
 import { SERVICE_WORKER_UPDATE } from '../../workers/events.js';
-import { LIST_UPDATED } from '../../constants/db.js';
+import { LIST_UPDATED, TODOS_FETCH } from '../../constants/db.js';
 import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
 
 import '../todo-item/todo-item-component.js';
@@ -18,25 +18,39 @@ class TodoList extends HTMLElement {
 
         ServiceWorkerBus.subscribe(this);
 
+        ServiceWorkerBus
+            .request({ type: TODOS_FETCH })
+            .then(({ payload: list }) => {
+                this.renderTodos(list);
+            });
+
         this.addEventListener(SERVICE_WORKER_UPDATE, (event) => {
             const { detail: { type, payload } } = event;
 
-            if (type != LIST_UPDATED) return;
-
-            for (const oldTodoItem of shadowRoot.querySelectorAll('todo-item')) {
-                shadowRoot.removeChild(oldTodoItem);
-            }
-
-            const sortedList = payload
-                .filter(isActiveTodo)
-                .sort(compareTodos);
-
-            for (const todo of sortedList) {
-                const todoItem = document.createElement('todo-item');
-                todoItem.todo = todo;
-                shadowRoot.appendChild(todoItem);
-            }
+            if (type == LIST_UPDATED) this.renderTodos(payload);
         });
+    }
+
+    disconnectedCallback(...args) {
+        console.log('<todo-list>’s disconnected call-back', ...args);
+    }
+
+    renderTodos(list) {
+        const { shadowRoot }= this;
+
+        for (const oldTodoItem of shadowRoot.querySelectorAll('todo-item')) {
+            shadowRoot.removeChild(oldTodoItem);
+        }
+
+        const sortedList = list
+            .filter(isActiveTodo)
+            .sort(compareTodos);
+
+        for (const todo of sortedList) {
+            const todoItem = document.createElement('todo-item');
+            todoItem.todo = todo;
+            shadowRoot.appendChild(todoItem);
+        }
     }
 }
 

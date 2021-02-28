@@ -1,4 +1,5 @@
 import { ServiceWorkerBus } from './workers/service-worker-bus.js';
+import { routes, pathOf } from './router/routes.js';
 
 import { OPEN_DB, TODO_EDIT } from './constants/db.js';
 import { EDITED_TODO_SUBMITTED } from './components/todo-item/todo-item-events.js';
@@ -38,9 +39,17 @@ function loadElements() {
     window.onclick = (event) => {
         const link = event.path.find(node => node.nodeName == 'A');
 
-        if (link?.host == window.location.host && link.target == '') {
+        const shouldHijackClick =
+            link?.host == window.location.host &&
+            link.target == '' &&
+            routes.has(link.pathname);
+
+        if (shouldHijackClick) {
             event.preventDefault();
-            history.pushState({}, 'Test', link.href);
+
+            if (link.pathname != window.location.pathname) {
+                history.pushState({}, 'Test', link.href);
+            }
         }
     };
 

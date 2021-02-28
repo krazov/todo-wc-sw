@@ -24,27 +24,5 @@ function loadElements() {
     const appRouter = document.createElement('app-router');
     app.appendChild(appRouter);
 
-    window.onclick = (event) => {
-        const link = event.path.find(node => node.nodeName == 'A');
-
-        const shouldHijackClick =
-            link?.host == window.location.host &&
-            link.target == '' &&
-            routes.has(link.pathname);
-
-        if (shouldHijackClick) {
-            event.preventDefault();
-
-            if (link.pathname != window.location.pathname) {
-                const state = {
-                    path: link.pathname,
-                };
-
-                window.history.pushState(state, routes.get(link.pathname).title, link.href);
-                window.dispatchEvent(new PopStateEvent('popstate', { state }));
-            }
-        }
-    };
-
     // TODO: consider moving here the connection with ServiceWorker
 }

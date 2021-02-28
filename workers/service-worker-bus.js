@@ -36,6 +36,8 @@ function request({ type, payload }) {
 
         requestors.set(id, { resolve, reject });
 
+        console.log('ServiceWorkerBus request:', { type, payload });
+
         serviceWorker.postMessage({
             id,
             type,

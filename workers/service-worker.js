@@ -131,23 +131,37 @@ function editTodo(requestId, todo) {
     };
 }
 
-function broadcastTodos() {
-    const allTodos = [];
-    const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
+async function broadcastTodos() {
+    sendMessage({
+        type: 'LIST_UPDATED',
+        payload: await allTodos(),
+    });
+}
 
-    todosObjectStore.openCursor().onsuccess = (event) => {
-        const cursor = event.target.result;
+async function fetchTodos(requestId) {
+    sendMessage({
+        id: requestId,
+        type: 'TODOS_FETCHED',
+        payload: await allTodos(),
+    });
+}
 
-        if (cursor) {
-            allTodos.push(cursor.value);
-            cursor.continue();
-        } else {
-            sendMessage({
-                type: 'LIST_UPDATED',
-                payload: allTodos,
-            });
-        }
-    };
+function allTodos() {
+    return new Promise((resolve) => {
+        const todosList = [];
+        const todosObjectStore = db.transaction('todos', 'readwrite').objectStore('todos');
+
+        todosObjectStore.openCursor().onsuccess = (event) => {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                todosList.push(cursor.value);
+                cursor.continue();
+            } else {
+                resolve(todosList);
+            }
+        };
+    });
 }
 
 self.onmessage = async function (event) {
@@ -156,6 +170,9 @@ self.onmessage = async function (event) {
     switch (type) {
         case 'OPEN_DB':
             openDB(id);
+            break;
+        case 'TODOS_FETCH':
+            fetchTodos(id);
             break;
         case 'TODO_ADD':
             addTodo(id, payload);

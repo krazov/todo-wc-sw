@@ -49,6 +49,7 @@ class AppRouter extends HTMLElement {
 
         try {
             const { appendModuleTo } = await loadModule(pathname);
+            // TODO: consider https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
             shadowRoot.textContent = '';
             appendModuleTo(shadowRoot);
         } catch(error) {

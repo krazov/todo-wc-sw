@@ -12,7 +12,10 @@ const sheet = (base, prop, value) => {
     return newSheet;
 };
 
+const globalFetchedStyles = sheet.bind(null, fetchedStyles, 'url');
+const globalInlineStyles = sheet.bind(null, inlineStyles, 'style');
+
 export const globalStyle = ({ style = '', url }) =>
     url
-        ? sheet(fetchedStyles, 'url', url)
-        : sheet(inlineStyles, 'style', style);
+        ? globalFetchedStyles(url)
+        : globalInlineStyles(style);

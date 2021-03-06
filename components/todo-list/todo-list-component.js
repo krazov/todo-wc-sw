@@ -1,10 +1,10 @@
-import { ServiceWorkerBus } from '../../workers/service-worker-bus.js';
-import { SERVICE_WORKER_UPDATE } from '../../workers/events.js';
-import { LIST_UPDATED, TODOS_FETCH } from '../../constants/db.js';
-import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
+import { ServiceWorkerBus } from '/workers/service-worker-bus.js';
+import { SERVICE_WORKER_UPDATE } from '/workers/events.js';
+import { LIST_UPDATED, TODOS_FETCH } from '/constants/db.js';
+import { compareTodos, isActiveTodo } from '/utils/todo.util.js';
+import { stylesheet } from '/utils/dom.stylesheet-constructor.js';
 
-import '../todo-item/todo-item-component.js';
-import { compareTodos, isActiveTodo } from '../../utils/todo.util.js';
+import '/components/todo-item/todo-item-component.js';
 
 const sheet = stylesheet({ url: '/components/todo-list/todo-list.css' });
 
@@ -31,9 +31,13 @@ class TodoList extends HTMLElement {
         });
     }
 
-    disconnectedCallback(...args) {
-        console.log('<todo-list>’s disconnected call-back', ...args);
-    }
+    // connectedCallback(...args) {
+    //     console.log('<todo-list>’s connected call-back', ...args);
+    // }
+
+    // disconnectedCallback(...args) {
+    //     console.log('<todo-list>’s disconnected call-back', ...args);
+    // }
 
     renderTodos(list) {
         const { shadowRoot }= this;

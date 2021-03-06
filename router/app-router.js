@@ -13,31 +13,30 @@ class AppRouter extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.loadRoute(window.location.pathname);
 
-        window.onclick = (event) => {
-            const link = event.path.find(node => node.nodeName == 'A');
+        // TODO: leave for later reuse in case of links embedded in custom content
+        // window.onclick = (event) => {
+        //     const link = event.path.find(node => node.nodeName == 'A');
 
-            const shouldHijackClick =
-                link?.host == window.location.host &&
-                link.target == '' &&
-                routes.has(link.pathname);
+        //     const shouldHijackClick =
+        //         link?.host == window.location.host &&
+        //         link.target == '' &&
+        //         routes.has(link.pathname);
 
-            if (shouldHijackClick) {
-                event.preventDefault();
+        //     if (shouldHijackClick) {
+        //         event.preventDefault();
 
-                if (link.pathname != window.location.pathname) {
-                    const state = {
-                        path: link.pathname,
-                    };
+        //         if (link.pathname != window.location.pathname) {
+        //             const state = {
+        //                 path: link.pathname,
+        //             };
 
-                    window.history.pushState(state, routes.get(link.pathname).title, link.href);
-                    window.dispatchEvent(new PopStateEvent('popstate', { state }));
-                }
-            }
-        };
+        //             window.history.pushState(state, routes.get(link.pathname).title, link.href);
+        //             window.dispatchEvent(new PopStateEvent('popstate', { state }));
+        //         }
+        //     }
+        // };
 
         window.onpopstate = (event) => {
-            console.log('Navigation happened!', event);
-
             const path = event?.state?.path;
             if (!path) throw Error('Incomplete data on the event!');
             this.loadRoute(path);

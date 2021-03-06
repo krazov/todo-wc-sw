@@ -1,6 +1,8 @@
-import { routes } from '../../router/routes.js';
-import { globalStyle } from '../../helpers/styles-container.helper.js';
-import { stylesheet } from '../../utils/dom.stylesheet-constructor.js';
+import { routes } from '/router/routes.js';
+import { globalStyle } from '/helpers/styles-container.helper.js';
+import { stylesheet } from '/utils/dom.stylesheet-constructor.js';
+
+import '/router/route-link.js';
 
 const resetSheet = globalStyle({ url: '/css/reset.css' });
 const sheet = stylesheet({ url: '/components/app-navigation/app-navigation.css' });
@@ -16,7 +18,7 @@ class AppNavigation extends HTMLElement {
         const nav = document.createElement('nav');
 
         for (const route of routes.values()) {
-            const link = document.createElement('a');
+            const link = document.createElement('a', { is: 'route-link' });
 
             link.textContent = route.label;
             link.title = route.title;

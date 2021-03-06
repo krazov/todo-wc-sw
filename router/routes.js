@@ -1,3 +1,4 @@
+// TODO: think about exposing own interface
 export const routes = new Map([
     ['/', {
         label: 'Home',

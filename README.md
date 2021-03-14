@@ -456,6 +456,16 @@ link.title = 'Go to homepage';
 link.href = '/';
 ```
 
+As per listening, while there is `popstate` event (which is triggered when I’m going back in the history to the website that was put there through JS, not an actual navigation), there is no `pushstate` event. One solution is to manually dispatch `PopStateEvent`:
+
+```js
+// from main.js
+
+window.dispatchEvent(new PopStateEvent('popstate', { state }));
+```
+
+This will be picked-up by `window.onpopstate` in router.
+
 ## TODOs (even todo list app has them)
 
 Given that I ever have a whim to continue, this is what I would do:
